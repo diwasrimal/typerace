@@ -1,0 +1,11 @@
+.typed-color {
+  color: #50fa7b;
+}
+
+.active-letter {
+  text-decoration: underline;
+}
+
+span {
+  color: rgba(254, 255, 255, 0.3);
+}
