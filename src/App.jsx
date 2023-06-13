@@ -10,51 +10,63 @@ export default function App() {
   const [activeWordIdx, setActiveWordIdx] = useState(0);
   const [activeLetterIdx, setActiveLetterIdx] = useState(0);
   const [activeWord, setActiveWord] = useState(WORDS[activeWordIdx]);
+  const [everythingTyped, setEverythingTyped] = useState(false);
 
   useEffect(() => {
-    // Ensures that 0 <= activeLetterIdx <= activeWord.length - 1
-    function adjustLetterIdx(pos) {
-      return Math.max(0, Math.min(activeWord.length, pos));
-    }
-
-    // Handles typing
     function handleKeyDown(click) {
       console.log(click)
 
+      function gotoNextWord() {
+        const nextWordIdx = activeWordIdx + 1;
+        setActiveWordIdx(nextWordIdx);
+        setActiveLetterIdx(0);
+        setActiveWord(WORDS[nextWordIdx]);
+      }
+
+      const wordTyped = activeLetterIdx > activeWord.length - 1;
+      const isLastWord = activeWordIdx === WORDS.length - 1;
+      const correctLetterTyped = click.key === activeWord[activeLetterIdx];
+
+      // console.log("Word typed:", wordTyped);
+
       // Prevent space key's default page down
+      // If current word has been typed and space is pressed
+      // while some words still remain, we move to next word
       if (click.code === "Space") {
         click.preventDefault();
-
-        // Move to next word is this letter is last and space is pressed
-        if (activeLetterIdx === activeWord.length) {
-          console.log("Space clicked, moving to next word");
-          const nextWordIdx = activeWordIdx + 1;
-          setActiveWordIdx(nextWordIdx);
-          setActiveLetterIdx(0);
-          setActiveWord(WORDS[nextWordIdx]);
+        if (wordTyped && !isLastWord) {
+          gotoNextWord();
         }
       }
 
-      // Backspace deletes text within current word
-      if (click.code === "Backspace") {
-        console.log("Decreasing letter index");
-        setActiveLetterIdx(adjustLetterIdx(activeLetterIdx - 1));
+      // Go forward to next letter if correct letter is typed
+      // If there is no next letter, conclude this typing session
+      if (correctLetterTyped) {
+        if (isLastWord && activeLetterIdx === activeWord.length - 1) {
+          setEverythingTyped(true);
+          return;
+        }
+        console.log("Increasing letter index");
+        setActiveLetterIdx(activeLetterIdx + 1);
+        return;
       }
 
-      // Go forward to next letter if correct letter is typed
-      if (click.key === activeWord[activeLetterIdx]) {
-        console.log("Increasing letter index");
-        setActiveLetterIdx(adjustLetterIdx(activeLetterIdx + 1));
+      // Go backwards if backspace is clicked
+      if (click.code === "Backspace") {
+        console.log("Decreasing letter index");
+        setActiveLetterIdx(Math.max(0, activeLetterIdx - 1));
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
-    console.log(activeLetterIdx);
-
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeLetterIdx]);
 
-  console.log(activeWord, activeWordIdx, activeLetterIdx);
+  console.log({ activeWord, activeWordIdx, activeLetterIdx });
+
+  if (everythingTyped) {
+    return <h1>Everything typed</h1>
+  }
 
   return (
     <div className="text-container">
