@@ -19,17 +19,23 @@ export default function App() {
 
     // Handles typing
     function handleKeyDown(click) {
-      // If current letter is last and space is pressed, move to next word
       console.log(click)
+
+      // Prevent space key's default page down
       if (click.code === "Space") {
         click.preventDefault();
+
+        // Move to next word is this letter is last and space is pressed
         if (activeLetterIdx === activeWord.length) {
           console.log("Space clicked, moving to next word");
-          setActiveWordIdx(activeWordIdx + 1);
+          const nextWordIdx = activeWordIdx + 1;
+          setActiveWordIdx(nextWordIdx);
+          setActiveLetterIdx(0);
+          setActiveWord(WORDS[nextWordIdx]);
         }
       }
 
-      // Go back if backspace is pressed
+      // Backspace deletes text within current word
       if (click.code === "Backspace") {
         console.log("Decreasing letter index");
         setActiveLetterIdx(adjustLetterIdx(activeLetterIdx - 1));
@@ -47,12 +53,6 @@ export default function App() {
 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeLetterIdx]);
-
-  // Change active word and active letter when we jump to next word.
-  useEffect(() => {
-    setActiveWord(WORDS[activeWordIdx]);
-    setActiveLetterIdx(0);
-  }, [activeWordIdx]);
 
   console.log(activeWord, activeWordIdx, activeLetterIdx);
 
