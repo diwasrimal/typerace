@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { TypedWords, NormalWords, ActiveWord } from "./components.jsx";
+import { useState, useEffect, useRef } from "react";
+import { TypedWords, NormalWords, ActiveWord, RestartIcon } from "./components.jsx";
 import text from "./assets/text.js";
 import "./App.css";
 
@@ -11,9 +11,15 @@ export default function App() {
   const [activeLetterIdx, setActiveLetterIdx] = useState(0);
   const [activeWord, setActiveWord] = useState(WORDS[activeWordIdx]);
   const [everythingTyped, setEverythingTyped] = useState(false);
+  const timeStart = useRef(null);
+  const timeTaken = useRef(null);
 
   useEffect(() => {
     function handleKeyDown(click) {
+      if (!timeStart.current) {
+        timeStart.current = Date.now();
+      }
+
       console.log(click)
 
       function gotoNextWord() {
@@ -36,6 +42,7 @@ export default function App() {
         click.preventDefault();
         if (wordTyped && !isLastWord) {
           gotoNextWord();
+          timeTaken.current = (Date.now() - timeStart.current) / 1000;
         }
       }
 
@@ -43,8 +50,8 @@ export default function App() {
       // If there is no next letter, conclude this typing session
       if (correctLetterTyped) {
         if (isLastWord && activeLetterIdx === activeWord.length - 1) {
+          timeTaken.current = (Date.now() - timeStart.current) / 1000;
           setEverythingTyped(true);
-          return;
         }
         console.log("Increasing letter index");
         setActiveLetterIdx(activeLetterIdx + 1);
@@ -62,17 +69,32 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeLetterIdx]);
 
-  console.log({ activeWord, activeWordIdx, activeLetterIdx });
-
-  if (everythingTyped) {
-    return <h1>Everything typed</h1>
+  function restartType() {
+    setActiveWordIdx(0);
+    setActiveWord(WORDS[0]);
+    setActiveLetterIdx(0);
+    setEverythingTyped(false);
+    timeStart.current = null;
   }
 
+  console.log({ activeWord, activeWordIdx, activeLetterIdx, everythingTyped });
+
   return (
-    <div className="text-container">
-      <TypedWords typedWords={WORDS.slice(0, activeWordIdx)} />
-      <ActiveWord activeWord={activeWord} activeLetterIdx={activeLetterIdx} />
-      <NormalWords words={WORDS.slice(activeWordIdx + 1, WORDS.length)} />
-    </div>
+    <>
+      <div className="text-container">
+        <TypedWords typedWords={WORDS.slice(0, activeWordIdx)} />
+        <ActiveWord activeWord={activeWord} activeLetterIdx={activeLetterIdx} />
+        <NormalWords words={WORDS.slice(activeWordIdx + 1, WORDS.length)} />
+
+      </div>
+      <div className="result">
+        <h1>WPM: {timeTaken.current ? Math.round(activeWordIdx / timeTaken.current * 60) : 0}</h1>
+        <button onClick={restartType} className="restart-btn">
+          <RestartIcon />
+        </button>
+      </div>
+    </>
+
   );
+
 }

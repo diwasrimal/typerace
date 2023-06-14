@@ -1,12 +1,15 @@
-:root {
-  color-scheme: light dark;
+html {
+  color-scheme: dark;
   background-color: #242424;
 }
 
-body {
-  height: 90vh;
+#root {
   display: flex;
-  justify-content: center;
+  flex-flow: column;
   align-items: center;
+  padding: 1rem;
+  height: 90vh;
+  justify-content: center;
+  font-family: 'Nunito', sans-serif, system-ui;
 }
 
