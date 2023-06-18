@@ -3,13 +3,18 @@ html {
   background-color: #242424;
 }
 
+:root {
+  --color-green: #50fa7b;
+  --color-white: #ffffff;
+  --color-red: #ff5555;
+  --color-bg-primary: #242424;
+  --color-bg-darker: #1e1e1e;
+}
+
 #root {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
   padding: 1rem;
   height: 90vh;
-  justify-content: center;
   font-family: 'Nunito', sans-serif, system-ui;
+  color: var(--color-white);
 }
 

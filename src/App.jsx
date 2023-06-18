@@ -1,16 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 import { TypedWords, NormalWords, ActiveWord, RestartIcon } from "./components.jsx";
-import text from "./assets/text.js";
+import { authors, sayings } from "./assets/data.js";
 import "./App.css";
 
-const WORDS = text.split(" ");
+function randomSaying() {
+  const randIdx = Math.floor(Math.random() * sayings.length);
+  return sayings[randIdx];
+}
 
 export default function App() {
+  // A random saying from Breaking Bad
+  const [saying, setSaying] = useState(randomSaying());
+  const [words, setWords] = useState(saying.quote.split(' '));
+  const [score, setScore] = useState(0);
+
   // Index of word that the cursor is currently at
   const [activeWordIdx, setActiveWordIdx] = useState(0);
   const [activeLetterIdx, setActiveLetterIdx] = useState(0);
-  const [activeWord, setActiveWord] = useState(WORDS[activeWordIdx]);
+  const [activeWord, setActiveWord] = useState(words[activeWordIdx]);
   const [everythingTyped, setEverythingTyped] = useState(false);
+
+  // Timer to calculate typing speed
   const timeStart = useRef(null);
   const timeTaken = useRef(null);
 
@@ -26,14 +36,14 @@ export default function App() {
         const nextWordIdx = activeWordIdx + 1;
         setActiveWordIdx(nextWordIdx);
         setActiveLetterIdx(0);
-        setActiveWord(WORDS[nextWordIdx]);
+        setActiveWord(words[nextWordIdx]);
       }
 
       const wordTyped = activeLetterIdx > activeWord.length - 1;
-      const isLastWord = activeWordIdx === WORDS.length - 1;
+      const isLastWord = activeWordIdx === words.length - 1;
       const correctLetterTyped = click.key === activeWord[activeLetterIdx];
 
-      // console.log("Word typed:", wordTyped);
+      console.log("Word typed:", wordTyped);
 
       // Prevent space key's default page down
       // If current word has been typed and space is pressed
@@ -69,32 +79,56 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeLetterIdx]);
 
-  function restartType() {
+  // Restart the typing session, resetting states and choosing new text
+  function restartTyping() {
+    const randSaying = randomSaying();
+    const newWords = randSaying.quote.split(' ')
+    setSaying(randSaying);
+    setWords(newWords);
     setActiveWordIdx(0);
-    setActiveWord(WORDS[0]);
+    setActiveWord(newWords[0]);
     setActiveLetterIdx(0);
     setEverythingTyped(false);
     timeStart.current = null;
   }
 
-  console.log({ activeWord, activeWordIdx, activeLetterIdx, everythingTyped });
+  async function verifyAuthor(name) {
+    setScore(name === saying.author ? score + 1 : score - 1)
+    restartTyping();
+  }
+
+  console.log({ saying, activeWord, score, activeWordIdx, activeLetterIdx, everythingTyped });
 
   return (
     <>
-      <div className="text-container">
-        <TypedWords typedWords={WORDS.slice(0, activeWordIdx)} />
-        <ActiveWord activeWord={activeWord} activeLetterIdx={activeLetterIdx} />
-        <NormalWords words={WORDS.slice(activeWordIdx + 1, WORDS.length)} />
-
-      </div>
       <div className="result">
-        <h1>WPM: {timeTaken.current ? Math.round(activeWordIdx / timeTaken.current * 60) : 0}</h1>
-        <button onClick={restartType} className="restart-btn">
+        <h2>Score: {score}</h2>
+        <h2>WPM: {timeTaken.current ? Math.round(activeWordIdx / timeTaken.current * 60) : 0}</h2>
+        <button onClick={restartTyping} className="restart-btn">
           <RestartIcon />
         </button>
       </div>
+
+      <div className="typing-area">
+        <div className={`text-container ${everythingTyped ? "blurred" : ""}`}>
+          <TypedWords typedWords={words.slice(0, activeWordIdx)} />
+          <ActiveWord activeWord={activeWord} activeLetterIdx={activeLetterIdx} />
+          <NormalWords words={words.slice(activeWordIdx + 1, words.length)} />
+        </div>
+
+        {everythingTyped &&
+          <div className="author-chooser">
+            <div style={{ textAlign: 'center', fontSize: '1.5rem', paddingTop: '1rem' }}>Who said that?</div>
+            <ul>
+              {authors.map((author, i) => (
+                <li key={i}>
+                  <button onClick={(e) => verifyAuthor(e.target.innerText)}> {author} </button> 
+                </li>
+              ))}
+            </ul>
+          </div>
+         }
+      </div>
     </>
-
   );
-
 }

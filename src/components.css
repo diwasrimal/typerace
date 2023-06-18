@@ -1,11 +1,11 @@
-.typed-color {
-  color: #50fa7b;
+.typed-text {
+  color: var(--color-green);
 }
 
 .active-letter {
   text-decoration: underline;
 }
 
-span {
+.unfocused-text {
   color: rgba(254, 255, 255, 0.3);
 }

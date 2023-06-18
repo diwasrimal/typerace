@@ -2,7 +2,7 @@ import "./components.css";
 
 export function TypedWords({ typedWords }) {
   return (
-    <span className="typed-color">
+    <span className="typed-text">
       {typedWords.join(' ')}
     </span>
   )
@@ -10,7 +10,7 @@ export function TypedWords({ typedWords }) {
 
 export function NormalWords({ words }) {
   return (
-    <span>
+    <span className="unfocused-text">
       {words.join(' ')}
     </span>
   )
@@ -20,13 +20,13 @@ export function ActiveWord({ activeWord, activeLetterIdx }) {
   return (
     <>
       <span>{' '}</span>
-      <span className="typed-color">
+      <span className="typed-text">
         {activeWord.slice(0, activeLetterIdx)}
       </span>
       <span className="active-letter">
         {activeWord[activeLetterIdx]}
       </span>
-      <span>
+      <span className="unfocused-text">
         {activeWord.slice(activeLetterIdx + 1, activeWord.length)}
       </span>
       <span>{' '}</span>
