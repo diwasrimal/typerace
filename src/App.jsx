@@ -13,6 +13,7 @@ export default function App() {
   const [saying, setSaying] = useState(randomSaying());
   const [words, setWords] = useState(saying.quote.split(' '));
   const [score, setScore] = useState(0);
+  const [scoreColor, setScoreColor] = useState("var(--color-white)");
 
   // Index of word that the cursor is currently at
   const [activeWordIdx, setActiveWordIdx] = useState(0);
@@ -93,7 +94,20 @@ export default function App() {
   }
 
   async function verifyAuthor(name) {
-    setScore(name === saying.author ? score + 1 : score - 1)
+    if (saying.author === name) {
+      setScore(score + 1);
+      setScoreColor("var(--color-green)");
+    }
+    else {
+      setScore(score - 1);
+      setScoreColor("var(--color-red)");
+    }
+
+    // Change the score color to normal after some time, this way
+    // Score will flash green/red after correct/incorrect guess
+    new Promise((resolve) => setTimeout(resolve, 1500))
+      .then(() => {setScoreColor("var(--color-white)")});
+
     restartTyping();
   }
 
@@ -102,7 +116,7 @@ export default function App() {
   return (
     <>
       <div className="result">
-        <h2>Score: {score}</h2>
+        <h2>Score: <span style={{ color: scoreColor }}>{score}</span></h2>
         <h2>WPM: {timeTaken.current ? Math.round(activeWordIdx / timeTaken.current * 60) : 0}</h2>
         <button onClick={restartTyping} className="restart-btn">
           <RestartIcon />

@@ -82,3 +82,11 @@
   cursor: pointer;
   color: #32abcf;
 }
+
+.result .score-increased {
+  color: var(--color-green);
+}
+
+.result .score-decreased {
+  color: var(--color-red);
+}
