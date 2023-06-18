@@ -83,6 +83,11 @@
   color: #32abcf;
 }
 
+.typing-area .author-chooser li button.correct-author {
+  color: var(--color-green);
+  font-weight: bold;
+}
+
 .result .score-increased {
   color: var(--color-green);
 }

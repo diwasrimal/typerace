@@ -14,6 +14,7 @@ export default function App() {
   const [words, setWords] = useState(saying.quote.split(' '));
   const [score, setScore] = useState(0);
   const [scoreColor, setScoreColor] = useState("var(--color-white)");
+  const [showCorrectQuoteAuthor, setShowCorrectQuoteAuthor] = useState(false);
 
   // Index of word that the cursor is currently at
   const [activeWordIdx, setActiveWordIdx] = useState(0);
@@ -93,7 +94,7 @@ export default function App() {
     timeStart.current = null;
   }
 
-  async function verifyAuthor(name) {
+  function verifyAuthorAndRestart(name) {
     if (saying.author === name) {
       setScore(score + 1);
       setScoreColor("var(--color-green)");
@@ -103,12 +104,16 @@ export default function App() {
       setScoreColor("var(--color-red)");
     }
 
+    // Display the correct answer
+    setShowCorrectQuoteAuthor(true);
+
     // Change the score color to normal after some time, this way
     // Score will flash green/red after correct/incorrect guess
-    new Promise((resolve) => setTimeout(resolve, 1500))
-      .then(() => {setScoreColor("var(--color-white)")});
-
-    restartTyping();
+    setTimeout(() => {
+      setScoreColor("var(--color-white)");
+      setShowCorrectQuoteAuthor(false);
+      restartTyping();
+    }, 1500);
   }
 
   console.log({ saying, activeWord, score, activeWordIdx, activeLetterIdx, everythingTyped });
@@ -136,7 +141,12 @@ export default function App() {
             <ul>
               {authors.map((author, i) => (
                 <li key={i}>
-                  <button onClick={(e) => verifyAuthor(e.target.innerText)}> {author} </button> 
+                  <button 
+                    className={(author === saying.author && showCorrectQuoteAuthor) ? "correct-author" : ""}
+                    onClick={(e) => verifyAuthorAndRestart(e.target.innerText)}
+                  > 
+                    {author} 
+                  </button> 
                 </li>
               ))}
             </ul>
