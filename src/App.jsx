@@ -8,6 +8,10 @@ import {
 import { authors, sayings } from "./assets/data.js";
 import "./App.css";
 
+const GREEN = "var(--color-green)";
+const WHITE = "var(--color-white)";
+const RED = "var(--color-red)";
+
 function randomSaying() {
   const randIdx = Math.floor(Math.random() * sayings.length);
   return sayings[randIdx];
@@ -18,7 +22,7 @@ export default function App() {
   const [saying, setSaying] = useState(randomSaying());
   const [words, setWords] = useState(saying.quote.split(" "));
   const [score, setScore] = useState(0);
-  const [scoreColor, setScoreColor] = useState("var(--color-white)");
+  const [scoreColor, setScoreColor] = useState(WHITE);
   const [showCorrectQuoteAuthor, setShowCorrectQuoteAuthor] = useState(false);
 
   // Index of word that the cursor is currently at
@@ -102,10 +106,10 @@ export default function App() {
   function verifyAuthorAndRestart(name) {
     if (saying.author === name) {
       setScore(score + 1);
-      setScoreColor("var(--color-green)");
+      setScoreColor(GREEN);
     } else {
       setScore(score - 1);
-      setScoreColor("var(--color-red)");
+      setScoreColor(RED);
     }
 
     // Display the correct answer
@@ -114,7 +118,7 @@ export default function App() {
     // Change the score color to normal after some time, this way
     // Score will flash green/red after correct/incorrect guess
     setTimeout(() => {
-      setScoreColor("var(--color-white)");
+      setScoreColor(WHITE);
       setShowCorrectQuoteAuthor(false);
       restartTyping();
     }, 1500);
