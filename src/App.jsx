@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { TypedWords, NormalWords, ActiveWord, RestartIcon } from "./components.jsx";
+import {
+  TypedWords,
+  NormalWords,
+  ActiveWord,
+  RestartIcon,
+} from "./components.jsx";
 import { authors, sayings } from "./assets/data.js";
 import "./App.css";
 
@@ -11,7 +16,7 @@ function randomSaying() {
 export default function App() {
   // A random saying from Breaking Bad
   const [saying, setSaying] = useState(randomSaying());
-  const [words, setWords] = useState(saying.quote.split(' '));
+  const [words, setWords] = useState(saying.quote.split(" "));
   const [score, setScore] = useState(0);
   const [scoreColor, setScoreColor] = useState("var(--color-white)");
   const [showCorrectQuoteAuthor, setShowCorrectQuoteAuthor] = useState(false);
@@ -32,7 +37,7 @@ export default function App() {
         timeStart.current = Date.now();
       }
 
-      console.log(click)
+      console.log(click);
 
       function gotoNextWord() {
         const nextWordIdx = activeWordIdx + 1;
@@ -84,7 +89,7 @@ export default function App() {
   // Restart the typing session, resetting states and choosing new text
   function restartTyping() {
     const randSaying = randomSaying();
-    const newWords = randSaying.quote.split(' ')
+    const newWords = randSaying.quote.split(" ");
     setSaying(randSaying);
     setWords(newWords);
     setActiveWordIdx(0);
@@ -98,8 +103,7 @@ export default function App() {
     if (saying.author === name) {
       setScore(score + 1);
       setScoreColor("var(--color-green)");
-    }
-    else {
+    } else {
       setScore(score - 1);
       setScoreColor("var(--color-red)");
     }
@@ -116,13 +120,27 @@ export default function App() {
     }, 1500);
   }
 
-  console.log({ saying, activeWord, score, activeWordIdx, activeLetterIdx, everythingTyped });
+  console.log({
+    saying,
+    activeWord,
+    score,
+    activeWordIdx,
+    activeLetterIdx,
+    everythingTyped,
+  });
 
   return (
     <>
       <div className="result">
-        <h2>Score: <span style={{ color: scoreColor }}>{score}</span></h2>
-        <h2>WPM: {timeTaken.current ? Math.round(activeWordIdx / timeTaken.current * 60) : 0}</h2>
+        <h2>
+          Score: <span style={{ color: scoreColor }}>{score}</span>
+        </h2>
+        <h2>
+          WPM:{" "}
+          {timeTaken.current
+            ? Math.round((activeWordIdx / timeTaken.current) * 60)
+            : 0}
+        </h2>
         <button onClick={restartTyping} className="restart-btn">
           <RestartIcon />
         </button>
@@ -131,27 +149,42 @@ export default function App() {
       <div className="typing-area">
         <div className={`text-container ${everythingTyped ? "blurred" : ""}`}>
           <TypedWords typedWords={words.slice(0, activeWordIdx)} />
-          <ActiveWord activeWord={activeWord} activeLetterIdx={activeLetterIdx} />
+          <ActiveWord
+            activeWord={activeWord}
+            activeLetterIdx={activeLetterIdx}
+          />
           <NormalWords words={words.slice(activeWordIdx + 1, words.length)} />
         </div>
 
-        {everythingTyped &&
+        {everythingTyped && (
           <div className="author-chooser">
-            <div style={{ textAlign: 'center', fontSize: '1.5rem', paddingTop: '1rem' }}>Who said that?</div>
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "1.5rem",
+                paddingTop: "1rem",
+              }}
+            >
+              Who said that?
+            </div>
             <ul>
               {authors.map((author, i) => (
                 <li key={i}>
-                  <button 
-                    className={(author === saying.author && showCorrectQuoteAuthor) ? "correct-author" : ""}
+                  <button
+                    className={
+                      author === saying.author && showCorrectQuoteAuthor
+                        ? "correct-author"
+                        : ""
+                    }
                     onClick={(e) => verifyAuthorAndRestart(e.target.innerText)}
-                  > 
-                    {author} 
-                  </button> 
+                  >
+                    {author}
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
-         }
+        )}
       </div>
     </>
   );
