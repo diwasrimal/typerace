@@ -35,7 +35,11 @@ export default function App() {
   const timeStart = useRef(null);
   const timeTaken = useRef(null);
 
+  // Refreses event listeners when active letter changes
+  // or when new saying is set.
   useEffect(() => {
+    
+    // Handles all keypresses, changing active letter/word on correct ones
     function handleKeyDown(click) {
       if (!timeStart.current) {
         timeStart.current = Date.now();
@@ -88,7 +92,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeLetterIdx]);
+  }, [activeLetterIdx, saying]);
 
   // Restart the typing session, resetting states and choosing new text
   function restartTyping() {
