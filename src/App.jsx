@@ -35,16 +35,12 @@ export default function App() {
   const timeStart = useRef(null);
   const timeTaken = useRef(null);
 
-  // Refreses event listeners when active letter changes
+  // Refreshes event listeners when active letter changes
   // or when new saying is set.
   useEffect(() => {
-    
+
     // Handles all keypresses, changing active letter/word on correct ones
     function handleKeyDown(click) {
-      if (!timeStart.current) {
-        timeStart.current = Date.now();
-      }
-
       console.log(click);
 
       function gotoNextWord() {
@@ -54,21 +50,25 @@ export default function App() {
         setActiveWord(words[nextWordIdx]);
       }
 
+      // Start timer if not started already
+      if (!timeStart.current) {
+        timeStart.current = Date.now();
+      }
+
+      // Prevent default behaviours of some keys
+      const preventedKeys = ["Escape", "Space", "Quote", "Enter"]
+      if (preventedKeys.includes(click.code))
+        click.preventDefault();
+
       const wordTyped = activeLetterIdx > activeWord.length - 1;
       const isLastWord = activeWordIdx === words.length - 1;
       const correctLetterTyped = click.key === activeWord[activeLetterIdx];
 
-      console.log("Word typed:", wordTyped);
-
-      // Prevent space key's default page down
       // If current word has been typed and space is pressed
       // while some words still remain, we move to next word
-      if (click.code === "Space") {
-        click.preventDefault();
-        if (wordTyped && !isLastWord) {
-          gotoNextWord();
-          timeTaken.current = (Date.now() - timeStart.current) / 1000;
-        }
+      if (click.code === "Space" && wordTyped && !isLastWord) {
+        gotoNextWord();
+        timeTaken.current = (Date.now() - timeStart.current) / 1000;
       }
 
       // Go forward to next letter if correct letter is typed
