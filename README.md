@@ -1,11 +1,11 @@
-# Typerace
+# Typing-bad
 
-A web app for typing.
+A fun typing game where you type quotes from [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad) and guess the quote's author.
 
 ## Quick Setup
 ```sh
-git clone https://github.com/diwasrimal/typerace.git
-cd typerace
+git clone https://github.com/diwasrimal/typing-bad.git
+cd typing-bad
 npm install
 npm run build
 npm run preview
